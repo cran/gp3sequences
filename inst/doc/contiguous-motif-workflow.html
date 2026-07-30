@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Contiguous Motif Workflow</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Contiguous Motif Workflow</h1>
+
+
+
+<div id="scope" class="section level2">
+<h2>Scope</h2>
+<p>This article demonstrates the restricted contiguous-motif workflow in
+<code>gp3sequences</code>. The workflow accepts ordinary long-format
+data frames and does not require Gazepoint software, hardware, exports,
+or <code>gp3tools</code>.</p>
+<p>The functions describe recurring state windows and their locations.
+They do not infer attention, cognition, emotion, intention,
+psychological state, or causal mechanisms.</p>
+</div>
+<div id="synthetic-ordered-state-data" class="section level2">
+<h2>Synthetic ordered-state data</h2>
+<p>The example contains three sequences and one preserved grouping
+variable.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(gp3sequences)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>sequence_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">sequence =</span> <span class="fu">c</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="st">&quot;s1&quot;</span>, <span class="dv">5</span><span class="dt">L</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="st">&quot;s2&quot;</span>, <span class="dv">4</span><span class="dt">L</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="st">&quot;s3&quot;</span>, <span class="dv">3</span><span class="dt">L</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  ),</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">state =</span> <span class="fu">c</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;B&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  ),</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">c</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="st">&quot;g1&quot;</span>, <span class="dv">5</span><span class="dt">L</span>),</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="st">&quot;g1&quot;</span>, <span class="dv">4</span><span class="dt">L</span>),</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="st">&quot;g2&quot;</span>, <span class="dv">3</span><span class="dt">L</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  ),</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>)</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>sequence_data</span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt;    sequence order state group</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; 1        s1     1     A    g1</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt; 2        s1     2     B    g1</span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; 3        s1     3     A    g1</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; 4        s1     4     B    g1</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt; 5        s1     5     C    g1</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#&gt; 6        s2     1     A    g1</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="co">#&gt; 7        s2     2     B    g1</span></span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a><span class="co">#&gt; 8        s2     3     C    g1</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="co">#&gt; 9        s2     4     B    g1</span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="co">#&gt; 10       s3     1     B    g2</span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a><span class="co">#&gt; 11       s3     2     A    g2</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a><span class="co">#&gt; 12       s3     3     B    g2</span></span></code></pre></div>
+</div>
+<div id="extract-contiguous-motifs" class="section level2">
+<h2>Extract contiguous motifs</h2>
+<p><code>extract_sequence_ngrams()</code> enumerates contiguous state
+windows only. Minimum and maximum motif lengths and the
+overlapping-occurrence policy are explicit.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>extracted <span class="ot">&lt;-</span> <span class="fu">extract_sequence_ngrams</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  sequence_data,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;order&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="st">&quot;group&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">min_length =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="at">max_length =</span> <span class="dv">3</span><span class="dt">L</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="at">overlap =</span> <span class="st">&quot;allow&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>)</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">head</span>(extracted<span class="sc">$</span>occurrences)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;   sequence_id group    motif_id motif_key     motif motif_length start_index</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 1          s1    g1    L2:S1|S2     S1|S2     A &gt; B            2           1</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; 2          s1    g1 L3:S1|S2|S1  S1|S2|S1 A &gt; B &gt; A            3           1</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; 3          s1    g1    L2:S2|S1     S2|S1     B &gt; A            2           2</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; 4          s1    g1 L3:S2|S1|S2  S2|S1|S2 B &gt; A &gt; B            3           2</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; 5          s1    g1    L2:S1|S2     S1|S2     A &gt; B            2           3</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; 6          s1    g1 L3:S1|S2|S3  S1|S2|S3 A &gt; B &gt; C            3           3</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt;   end_index start_order end_order start_original_row end_original_row</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; 1         2           1         2                  1                2</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 2         3           1         3                  1                3</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; 3         3           2         3                  2                3</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; 4         4           2         4                  2                4</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; 5         4           3         4                  3                4</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; 6         5           3         5                  3                5</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt;   occurrence_index</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt; 1                1</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co">#&gt; 2                1</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="co">#&gt; 3                1</span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="co">#&gt; 4                1</span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co">#&gt; 5                2</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt; 6                1</span></span></code></pre></div>
+</div>
+<div id="summarise-filter-and-format-motifs" class="section level2">
+<h2>Summarise, filter, and format motifs</h2>
+<p>Sequence prevalence uses every validated sequence as its denominator.
+Filtering is deterministic and retains explicit thresholds and tie
+handling.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>motif_summary <span class="ot">&lt;-</span> <span class="fu">summarise_sequence_motifs</span>(extracted)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>motif_filter <span class="ot">&lt;-</span> <span class="fu">filter_sequence_motifs</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  motif_summary,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">min_occurrences =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">min_sequences =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">min_prevalence =</span> <span class="fl">0.50</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="at">motif_lengths =</span> <span class="fu">c</span>(<span class="dv">2</span><span class="dt">L</span>, <span class="dv">3</span><span class="dt">L</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="at">top_n =</span> <span class="dv">10</span><span class="dt">L</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="at">rank_by =</span> <span class="st">&quot;sequence_prevalence&quot;</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">ties =</span> <span class="st">&quot;include&quot;</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>)</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>motif_table <span class="ot">&lt;-</span> <span class="fu">format_sequence_motifs</span>(</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  motif_filter,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="at">prevalence =</span> <span class="st">&quot;percent&quot;</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">1</span><span class="dt">L</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>motif_table<span class="sc">$</span>table</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt;   rank    motif_id motif_key     motif motif_length n_occurrences n_sequences</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; 1    1    L2:S1|S2     S1|S2     A &gt; B            2             4           3</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; 2    2    L2:S2|S1     S2|S1     B &gt; A            2             2           2</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; 3    2    L2:S2|S3     S2|S3     B &gt; C            2             2           2</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; 4    2 L3:S1|S2|S3  S1|S2|S3 A &gt; B &gt; C            3             2           2</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; 5    2 L3:S2|S1|S2  S2|S1|S2 B &gt; A &gt; B            3             2           2</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt;   sequence_prevalence_percent occurrence_share_percent</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; 1                       100.0                     26.7</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; 2                        66.7                     13.3</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt; 3                        66.7                     13.3</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; 4                        66.7                     13.3</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; 5                        66.7                     13.3</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt;   mean_occurrences_per_sequence mean_occurrences_when_present</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt; 1                           1.3                           1.3</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; 2                           0.7                           1.0</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt; 3                           0.7                           1.0</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt; 4                           0.7                           1.0</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt; 5                           0.7                           1.0</span></span></code></pre></div>
+</div>
+<div id="summarise-motif-positions" class="section level2">
+<h2>Summarise motif positions</h2>
+<p>Positions may represent the start, centre, or end of each motif
+occurrence. Absolute positions use one-based state indices. Relative
+positions range from 0 to 1 across each sequence.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>position_summary <span class="ot">&lt;-</span> <span class="fu">summarise_sequence_motif_positions</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  extracted,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">position =</span> <span class="st">&quot;centre&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">scale =</span> <span class="st">&quot;relative&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;group&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>position_summary<span class="sc">$</span>summary</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;    group    motif_id motif_key     motif motif_length position_basis</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 1     g1 L3:S1|S2|S1  S1|S2|S1 A &gt; B &gt; A            3         centre</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; 2     g1    L2:S1|S2     S1|S2     A &gt; B            2         centre</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 3     g1    L2:S2|S1     S2|S1     B &gt; A            2         centre</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 4     g1 L3:S2|S1|S2  S2|S1|S2 B &gt; A &gt; B            3         centre</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 5     g1 L3:S1|S2|S3  S1|S2|S3 A &gt; B &gt; C            3         centre</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 6     g1 L3:S2|S3|S2  S2|S3|S2 B &gt; C &gt; B            3         centre</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 7     g1    L2:S2|S3     S2|S3     B &gt; C            2         centre</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; 8     g1    L2:S3|S2     S3|S2     C &gt; B            2         centre</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; 9     g2    L2:S2|S1     S2|S1     B &gt; A            2         centre</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; 10    g2 L3:S2|S1|S2  S2|S1|S2 B &gt; A &gt; B            3         centre</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; 11    g2    L2:S1|S2     S1|S2     A &gt; B            2         centre</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt;    position_scale n_occurrences n_sequences min_position max_position</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; 1        relative             1           1    0.2500000    0.2500000</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; 2        relative             3           2    0.1250000    0.6250000</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; 3        relative             1           1    0.3750000    0.3750000</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; 4        relative             1           1    0.5000000    0.5000000</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; 5        relative             2           2    0.3333333    0.7500000</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; 6        relative             1           1    0.6666667    0.6666667</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; 7        relative             2           2    0.5000000    0.8750000</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; 8        relative             1           1    0.8333333    0.8333333</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; 9        relative             1           1    0.2500000    0.2500000</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; 10       relative             1           1    0.5000000    0.5000000</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; 11       relative             1           1    0.7500000    0.7500000</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt;    mean_position median_position</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; 1      0.2500000       0.2500000</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; 2      0.3055556       0.1666667</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; 3      0.3750000       0.3750000</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; 4      0.5000000       0.5000000</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; 5      0.5416667       0.5416667</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; 6      0.6666667       0.6666667</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; 7      0.6875000       0.6875000</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; 8      0.8333333       0.8333333</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt; 9      0.2500000       0.2500000</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt; 10     0.5000000       0.5000000</span></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="co">#&gt; 11     0.7500000       0.7500000</span></span></code></pre></div>
+<p><code>format_sequence_motif_positions()</code> changes display
+precision and units without modifying the underlying analytical
+object.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>position_table <span class="ot">&lt;-</span> <span class="fu">format_sequence_motif_positions</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  position_summary,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">1</span><span class="dt">L</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">position_units =</span> <span class="st">&quot;percent&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">include_rank =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>position_table<span class="sc">$</span>table</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;    group rank    motif_id motif_key     motif motif_length position_basis</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; 1     g1    1 L3:S1|S2|S1  S1|S2|S1 A &gt; B &gt; A            3         centre</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; 2     g1    2    L2:S1|S2     S1|S2     A &gt; B            2         centre</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; 3     g1    3    L2:S2|S1     S2|S1     B &gt; A            2         centre</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; 4     g1    4 L3:S2|S1|S2  S2|S1|S2 B &gt; A &gt; B            3         centre</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 5     g1    5 L3:S1|S2|S3  S1|S2|S3 A &gt; B &gt; C            3         centre</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 6     g1    6 L3:S2|S3|S2  S2|S3|S2 B &gt; C &gt; B            3         centre</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 7     g1    7    L2:S2|S3     S2|S3     B &gt; C            2         centre</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; 8     g1    8    L2:S3|S2     S3|S2     C &gt; B            2         centre</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; 9     g2    1    L2:S2|S1     S2|S1     B &gt; A            2         centre</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; 10    g2    2 L3:S2|S1|S2  S2|S1|S2 B &gt; A &gt; B            3         centre</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; 11    g2    3    L2:S1|S2     S1|S2     A &gt; B            2         centre</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt;    position_scale position_unit n_occurrences n_sequences min_position</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; 1        relative       percent             1           1         25.0</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt; 2        relative       percent             3           2         12.5</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt; 3        relative       percent             1           1         37.5</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; 4        relative       percent             1           1         50.0</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt; 5        relative       percent             2           2         33.3</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; 6        relative       percent             1           1         66.7</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt; 7        relative       percent             2           2         50.0</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt; 8        relative       percent             1           1         83.3</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt; 9        relative       percent             1           1         25.0</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt; 10       relative       percent             1           1         50.0</span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt; 11       relative       percent             1           1         75.0</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt;    max_position mean_position median_position</span></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co">#&gt; 1          25.0          25.0            25.0</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="co">#&gt; 2          62.5          30.6            16.7</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a><span class="co">#&gt; 3          37.5          37.5            37.5</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a><span class="co">#&gt; 4          50.0          50.0            50.0</span></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a><span class="co">#&gt; 5          75.0          54.2            54.2</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a><span class="co">#&gt; 6          66.7          66.7            66.7</span></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a><span class="co">#&gt; 7          87.5          68.8            68.8</span></span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a><span class="co">#&gt; 8          83.3          83.3            83.3</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a><span class="co">#&gt; 9          25.0          25.0            25.0</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="co">#&gt; 10         50.0          50.0            50.0</span></span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a><span class="co">#&gt; 11         75.0          75.0            75.0</span></span></code></pre></div>
+</div>
+<div id="plot-motif-prevalence" class="section level2">
+<h2>Plot motif prevalence</h2>
+<p><code>plot_sequence_motifs()</code> uses base R graphics. The
+returned data frame contains the exact motifs and values used in the
+plot.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>plotted_motifs <span class="ot">&lt;-</span> <span class="fu">plot_sequence_motifs</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  motif_summary,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;sequence_prevalence&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">top_n =</span> <span class="dv">8</span><span class="dt">L</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">motif_lengths =</span> <span class="fu">c</span>(<span class="dv">2</span><span class="dt">L</span>, <span class="dv">3</span><span class="dt">L</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">ties =</span> <span class="st">&quot;include&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">horizontal =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>)</span></code></pre></div>
+<div class="float">
+<img role="img" aria-label="Sequence prevalence for the most frequent contiguous motifs." src="data:image/png;base64,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" alt="Sequence prevalence for the most frequent contiguous motifs." />
+<div class="figcaption">Sequence prevalence for the most frequent
+contiguous motifs.</div>
+</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>plotted_motifs[</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;plot_rank&quot;</span>, <span class="st">&quot;motif&quot;</span>, <span class="st">&quot;motif_length&quot;</span>, <span class="st">&quot;plot_value&quot;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>]</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt;   plot_rank     motif motif_length plot_value</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; 1         1     A &gt; B            2  1.0000000</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; 2         2     B &gt; A            2  0.6666667</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; 3         3     B &gt; C            2  0.6666667</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; 4         4 A &gt; B &gt; C            3  0.6666667</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; 5         5 B &gt; A &gt; B            3  0.6666667</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; 6         6     C &gt; B            2  0.3333333</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 7         7 A &gt; B &gt; A            3  0.3333333</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; 8         8 B &gt; C &gt; B            3  0.3333333</span></span></code></pre></div>
+</div>
+<div id="plot-motif-locations" class="section level2">
+<h2>Plot motif locations</h2>
+<p>The strip display shows individual occurrence positions with
+deterministic stacking. No random jitter is used.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>strip_data <span class="ot">&lt;-</span> <span class="fu">plot_sequence_motif_positions</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  extracted,</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">position =</span> <span class="st">&quot;centre&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">scale =</span> <span class="st">&quot;relative&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">top_n =</span> <span class="dv">5</span><span class="dt">L</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="at">display =</span> <span class="st">&quot;strip&quot;</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>)</span></code></pre></div>
+<div class="float">
+<img role="img" aria-label="Relative centre positions of selected motif occurrences." src="data:image/png;base64,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" alt="Relative centre positions of selected motif occurrences." />
+<div class="figcaption">Relative centre positions of selected motif
+occurrences.</div>
+</div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">head</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  strip_data[</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>      <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>      <span class="st">&quot;motif&quot;</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>      <span class="st">&quot;position_value&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>      <span class="st">&quot;plot_rank&quot;</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    )</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  ]</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt;   sequence_id motif position_value plot_rank</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; 1          s1 A &gt; B      0.1250000         1</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; 2          s2 A &gt; B      0.1666667         1</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; 3          s1 A &gt; B      0.6250000         1</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; 4          s3 A &gt; B      0.7500000         1</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; 5          s3 B &gt; A      0.2500000         2</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; 6          s1 B &gt; A      0.3750000         2</span></span></code></pre></div>
+<p>The distribution display provides a compact base-R summary for the
+same structural positions.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">plot_sequence_motif_positions</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  extracted,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">position =</span> <span class="st">&quot;centre&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">scale =</span> <span class="st">&quot;relative&quot;</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">top_n =</span> <span class="dv">5</span><span class="dt">L</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">display =</span> <span class="st">&quot;distribution&quot;</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>)</span></code></pre></div>
+<div class="float">
+<img role="img" aria-label="Distributions of relative motif centre positions." src="data:image/png;base64,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" alt="Distributions of relative motif centre positions." />
+<div class="figcaption">Distributions of relative motif centre
+positions.</div>
+</div>
+</div>
+<div id="interpretation-boundary" class="section level2">
+<h2>Interpretation boundary</h2>
+<p>The reported counts, prevalence values, and positions describe the
+supplied ordered states under the declared preparation, motif-length,
+overlap, filtering, and position rules. Any substantive interpretation
+belongs to the research design and cannot be inferred automatically from
+motif structure alone.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
