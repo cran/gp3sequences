@@ -1,4 +1,34 @@
-# gp3sequences 0.1.0
+# gp3sequences 0.3.0
+* Added CRAN status, download, DOI, GitHub Actions, pkgdown, and license badges; added canonical CRAN, website, source, issue, and CRAN-check links; and documented CRAN and GitHub installation paths.
+* Synchronized README, package description, citation metadata, and pkgdown-facing release status for 0.3.0; README counts are now derived from the public NAMESPACE and vignette sources.
+* Added a common analysis-contract and provenance foundation for systematic 0.3.0 hardening.
+* Added `sequence_capabilities()`, `audit_sequence_analysis()`, and `compare_sequence_analysis_results()` for machine-readable capability, contract, and reproducibility audits.
+* Added deterministic contract, metamorphic, and adversarial test foundations plus a machine-readable public-API validation ledger.
+
+* Added auditable longitudinal and panel-sequence preparation, summaries, change metrics, and plots.
+* Added bounded non-contiguous subsequence enumeration, prevalence summaries, group comparisons, and plots.
+* Added optional mgcv-based time-varying state and transition models with participant random-effect support.
+* Added dependency-light multichannel and covariate-dependent categorical hidden Markov models.
+* Added design-aware permutation and bootstrap comparisons with explicit associational and causal guardrails.
+* Added six focused visualisation helpers, deterministic tests, an installed-package smoke test, and six synthetic articles.
+
+# gp3sequences 0.2.0
+
+* Released the advanced standalone sequence-analysis API with 46 exported functions and 47 manual pages.
+* Added four integrated workflow articles, bringing the package website to nine synthetic, reproducible articles.
+* Prepared the complete reference and article collection for publication at the main package website.
+* Configured pkgdown so future validated `master` updates publish directly to the main website.
+
+* Added four integrated, user-oriented articles covering getting started, validation and preparation, method selection, and a reproducible synthetic case study.
+* Added the complete advanced sequence-analysis roadmap.
+* Added deterministic aligned-position consensus sequences and agreement summaries.
+* Added descriptive between-group state, transition, and length comparisons.
+* Added Levenshtein, LCS, optimal-matching, and transition-profile distances.
+* Added hierarchical, PAM, and CLARA clustering interfaces, validation metrics, representatives, ensembles, and stability resampling.
+* Added transition networks, centrality, communities, higher-order transition models, prediction, and sequence-level bootstrap intervals.
+* Added dependency-light categorical HMM and mixture-HMM estimation, decoding, summaries, and model-comparison tables.
+* Added optional adapters for TraMineR, arulesSequences, GrpString, seqHMM, igraph, and common gp3tools-style data frames.
+* Added four synthetic workflow articles, deterministic tests, and an end-to-end smoke test.
 
 * Initial public release.
 * Created the independent `gp3sequences` package scaffold.

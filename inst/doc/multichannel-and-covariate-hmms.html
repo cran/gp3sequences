@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Multichannel and Covariate-Dependent HMMs</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Multichannel and Covariate-Dependent
+HMMs</h1>
+
+
+
+<div id="scope-and-guardrails" class="section level2">
+<h2>Scope and guardrails</h2>
+<p>Multichannel HMMs model several categorical observation channels
+through a shared finite-state process. Covariate-dependent HMMs allow
+initial and transition probabilities to vary with declared numeric
+covariates. Latent states are statistical model states; labels should
+not be treated as emotion, cognition, diagnosis, or causal
+mechanisms.</p>
+</div>
+<div id="synthetic-data" class="section level2">
+<h2>Synthetic data</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">s1 =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">s2 =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;C&quot;</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">s3 =</span> <span class="fu">c</span>(<span class="st">&quot;C&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">s4 =</span> <span class="fu">c</span>(<span class="st">&quot;C&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">s5 =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;C&quot;</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">s6 =</span> <span class="fu">c</span>(<span class="st">&quot;C&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">seq_along</span>(paths), <span class="cf">function</span>(i) {</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    <span class="at">sequence_id =</span> <span class="fu">names</span>(paths)[i],</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="at">sequence_order =</span> <span class="fu">seq_along</span>(paths[[i]]),</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="at">state =</span> paths[[i]],</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>    <span class="at">context =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>    <span class="at">condition =</span> <span class="fu">as.integer</span>(i <span class="sc">&gt;</span> <span class="dv">3</span><span class="dt">L</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  )</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>}))</span></code></pre></div>
+</div>
+<div id="multichannel-model" class="section level2">
+<h2>Multichannel model</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>multi <span class="ot">&lt;-</span> <span class="fu">fit_multichannel_sequence_hmm</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  data,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">n_states =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">channel_cols =</span> <span class="fu">c</span>(<span class="st">&quot;state&quot;</span>, <span class="st">&quot;context&quot;</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">max_iter =</span> <span class="dv">15</span><span class="dt">L</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">2</span><span class="dt">L</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">summarise_multichannel_sequence_hmm</span>(multi)<span class="sc">$</span>fit</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;   n_states n_channels n_sequences n_observations log_likelihood      aic</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 1        2          2           6             30      -54.43378 130.8676</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;        bic iterations converged</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; 1 146.2807         15     FALSE</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">decode_multichannel_sequence_states</span>(multi))</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;   sequence_id sequence_order latent_state posterior_probability decoding_method</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; 1          s1              1     latent_2             1.0000000         viterbi</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; 2          s1              2     latent_2             0.8794941         viterbi</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; 3          s1              3     latent_1             1.0000000         viterbi</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; 4          s1              4     latent_1             1.0000000         viterbi</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; 5          s1              5     latent_2             0.9999783         viterbi</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; 6          s2              1     latent_2             1.0000000         viterbi</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt;   state context</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 1     A       x</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; 2     A       x</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; 3     B       y</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; 4     B       y</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; 5     C       z</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt; 6     A       x</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">plot_multichannel_sequence_hmm</span>(multi, <span class="at">channel =</span> <span class="st">&quot;state&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="covariate-dependent-model" class="section level2">
+<h2>Covariate-dependent model</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>covariate <span class="ot">&lt;-</span> <span class="fu">fit_covariate_sequence_hmm</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  data,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">n_states =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">initial_covariate_cols =</span> <span class="st">&quot;condition&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">transition_covariate_cols =</span> <span class="st">&quot;condition&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">max_iter =</span> <span class="dv">10</span><span class="dt">L</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">inner_maxit =</span> <span class="dv">30</span><span class="dt">L</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">3</span><span class="dt">L</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">summarise_covariate_sequence_hmm</span>(covariate)<span class="sc">$</span>fit</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;   n_states n_sequences n_observations log_likelihood      aic      bic</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 1        2           6             30      -29.67882 79.35764 93.36961</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt;   iterations converged optimizers_converged ridge</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 1         10     FALSE                 TRUE 1e-06</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="fu">predict_covariate_transition_probabilities</span>(</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  covariate,</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">condition =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>)</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt;   row from_state to_state probability</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; 1   1   latent_1 latent_1   0.2432060</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; 2   1   latent_1 latent_2   0.7567940</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; 3   1   latent_2 latent_1   0.1281876</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; 4   1   latent_2 latent_2   0.8718124</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; 5   2   latent_1 latent_1   0.5231559</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; 6   2   latent_1 latent_2   0.4768441</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; 7   2   latent_2 latent_1   0.5798800</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; 8   2   latent_2 latent_2   0.4201200</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">decode_covariate_sequence_states</span>(covariate))</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt;   sequence_id sequence_order observed_state latent_state posterior_probability</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; 1          s1              1              A     latent_1             0.9999204</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; 2          s1              2              A     latent_1             0.6392483</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; 3          s1              3              B     latent_2             0.9931941</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; 4          s1              4              B     latent_2             0.9953192</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; 5          s1              5              C     latent_2             0.8284966</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; 6          s2              1              A     latent_1             0.9998787</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt;   decoding_method</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; 1         viterbi</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; 2         viterbi</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; 3         viterbi</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; 4         viterbi</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; 5         viterbi</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt; 6         viterbi</span></span></code></pre></div>
+</div>
+<div id="reporting" class="section level2">
+<h2>Reporting</h2>
+<p>Report channel coding, state count, starting seed, convergence
+status, log-likelihood history, AIC/BIC as descriptive criteria,
+covariate scaling, and any sensitivity analyses. Multiple starts and
+simulation recovery should be used before substantive
+interpretation.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

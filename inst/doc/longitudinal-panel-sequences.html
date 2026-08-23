@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Longitudinal and Panel Sequence Workflows</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Longitudinal and Panel Sequence
+Workflows</h1>
+
+
+
+<div id="scope" class="section level2">
+<h2>Scope</h2>
+<p>Panel sequences are repeated ordered-state records from the same
+independent unit. The workflow preserves the panel identifier, occasion,
+sequence identity, and preprocessing decisions. Distance between
+occasions is a structural change measure; it is not evidence of
+learning, adaptation, or causality by itself.</p>
+</div>
+<div id="synthetic-data" class="section level2">
+<h2>Synthetic data</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>base <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">participant_id =</span> <span class="fu">rep</span>(<span class="fu">paste0</span>(<span class="st">&quot;p&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>), <span class="at">each =</span> <span class="dv">8</span><span class="dt">L</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">occasion =</span> <span class="fu">rep</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">each =</span> <span class="dv">4</span><span class="dt">L</span>), <span class="at">times =</span> <span class="dv">4</span><span class="dt">L</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">sequence_id =</span> <span class="fu">rep</span>(<span class="fu">paste0</span>(<span class="st">&quot;s&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>), <span class="at">each =</span> <span class="dv">4</span><span class="dt">L</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">sequence_order =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">times =</span> <span class="dv">8</span><span class="dt">L</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">state =</span> <span class="fu">c</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;D&quot;</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="st">&quot;A&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;D&quot;</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="st">&quot;D&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    <span class="st">&quot;D&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  ),</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>)</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">head</span>(base)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt;   participant_id occasion sequence_id sequence_order state</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; 1             p1        1          s1              1     A</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; 2             p1        1          s1              2     B</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; 3             p1        1          s1              3     C</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; 4             p1        1          s1              4     D</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; 5             p1        2          s2              1     A</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; 6             p1        2          s2              2     B</span></span></code></pre></div>
+</div>
+<div id="prepare-and-audit-the-panel" class="section level2">
+<h2>Prepare and audit the panel</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>panel <span class="ot">&lt;-</span> <span class="fu">prepare_sequence_panel</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  base,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">panel_id_col =</span> <span class="st">&quot;participant_id&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">occasion_col =</span> <span class="st">&quot;occasion&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>panel<span class="sc">$</span>index</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;   sequence_id panel_id occasion occasion_rank sequence_length transition_count</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 1          s1       p1        1             1               4                3</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 2          s2       p1        2             2               4                3</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 3          s3       p2        1             1               4                3</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 4          s4       p2        2             2               4                3</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; 5          s5       p3        1             1               4                3</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; 6          s6       p3        2             2               4                3</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 7          s7       p4        1             1               4                3</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; 8          s8       p4        2             2               4                3</span></span></code></pre></div>
+<p>A unique panel/occasion combination is required by default. This
+prevents two sequences from being silently treated as the same repeated
+observation.</p>
+</div>
+<div id="summarise-occasions-and-states" class="section level2">
+<h2>Summarise occasions and states</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>panel_summary <span class="ot">&lt;-</span> <span class="fu">summarise_sequence_panel</span>(panel)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>panel_summary<span class="sc">$</span>occasions</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;   occasion n_panels n_sequences mean_length median_length mean_transitions</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; 1        1        4           4           4             4                3</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; 2        2        4           4           4             4                3</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">head</span>(panel_summary<span class="sc">$</span>states)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;   occasion state occurrence_count occurrence_share sequence_count</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 1        1     A                4            0.250              4</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 2        1     B                4            0.250              3</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 3        1     C                4            0.250              3</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 4        1     D                4            0.250              4</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 5        2     A                6            0.375              4</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; 6        2     B                2            0.125              2</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt;   sequence_prevalence</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 1                1.00</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; 2                0.75</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; 3                0.75</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; 4                1.00</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; 5                1.00</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; 6                0.50</span></span></code></pre></div>
+</div>
+<div id="quantify-within-panel-change" class="section level2">
+<h2>Quantify within-panel change</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>changes <span class="ot">&lt;-</span> <span class="fu">compare_sequence_panel_changes</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  panel,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;levenshtein&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">normalise =</span> <span class="st">&quot;max_length&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>changes</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   panel_id from_sequence_id to_sequence_id from_occasion to_occasion from_rank</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 1       p1               s1             s2             1           2         1</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 2       p2               s3             s4             1           2         1</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 3       p3               s5             s6             1           2         1</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; 4       p4               s7             s8             1           2         1</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt;   to_rank distance length_change transition_change</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 1       2     0.25             0                 0</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 2       2     0.25             0                 0</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 3       2     0.25             0                 0</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 4       2     0.25             0                 0</span></span></code></pre></div>
+<p>Alternative distance methods use the same explicit arguments as
+<code>compute_sequence_distance()</code>. The result compares
+consecutive occasions within each panel only.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">plot_sequence_panel_changes</span>(changes, <span class="at">metric =</span> <span class="st">&quot;distance&quot;</span>, <span class="at">type =</span> <span class="st">&quot;individual&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">plot_sequence_panel_changes</span>(changes, <span class="at">metric =</span> <span class="st">&quot;distance&quot;</span>, <span class="at">type =</span> <span class="st">&quot;summary&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="reporting" class="section level2">
+<h2>Reporting</h2>
+<p>Report the panel unit, occasion ordering, distance method,
+normalisation, sequence counts at each occasion, and any missing
+occasions. Treat change as a structural description unless a separate
+design supports stronger inference.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

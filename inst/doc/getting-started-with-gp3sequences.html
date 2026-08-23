@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Getting Started with gp3sequences</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Getting Started with gp3sequences</h1>
+
+
+
+<div id="purpose" class="section level2">
+<h2>Purpose</h2>
+<p><code>gp3sequences</code> accepts ordinary long-format ordered
+categorical data. This article introduces the complete structural
+workflow: audit, preparation, encoding, descriptive summaries,
+contiguous motifs, distances, clustering, consensus, group comparison,
+and transition structure.</p>
+<p>All outputs are structural or statistical. They do not independently
+establish attention, cognition, emotion, comprehension, intention,
+diagnosis, causality, or other psychological attributes.</p>
+</div>
+<div id="synthetic-long-format-data" class="section level2">
+<h2>Synthetic long-format data</h2>
+<p>Each sequence has an identifier, an explicit order, a categorical
+state, a positive duration, participant metadata, and an assigned
+interface group.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">s1 =</span> <span class="fu">c</span>(<span class="st">&quot;home&quot;</span>, <span class="st">&quot;search&quot;</span>, <span class="st">&quot;product&quot;</span>, <span class="st">&quot;cart&quot;</span>, <span class="st">&quot;checkout&quot;</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">s2 =</span> <span class="fu">c</span>(<span class="st">&quot;home&quot;</span>, <span class="st">&quot;search&quot;</span>, <span class="st">&quot;product&quot;</span>, <span class="st">&quot;cart&quot;</span>, <span class="st">&quot;home&quot;</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">s3 =</span> <span class="fu">c</span>(<span class="st">&quot;home&quot;</span>, <span class="st">&quot;category&quot;</span>, <span class="st">&quot;product&quot;</span>, <span class="st">&quot;cart&quot;</span>, <span class="st">&quot;checkout&quot;</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">s4 =</span> <span class="fu">c</span>(<span class="st">&quot;home&quot;</span>, <span class="st">&quot;category&quot;</span>, <span class="st">&quot;product&quot;</span>, <span class="st">&quot;search&quot;</span>, <span class="st">&quot;checkout&quot;</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">s5 =</span> <span class="fu">c</span>(<span class="st">&quot;home&quot;</span>, <span class="st">&quot;category&quot;</span>, <span class="st">&quot;search&quot;</span>, <span class="st">&quot;product&quot;</span>, <span class="st">&quot;checkout&quot;</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">s6 =</span> <span class="fu">c</span>(<span class="st">&quot;home&quot;</span>, <span class="st">&quot;search&quot;</span>, <span class="st">&quot;category&quot;</span>, <span class="st">&quot;product&quot;</span>, <span class="st">&quot;home&quot;</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">s7 =</span> <span class="fu">c</span>(<span class="st">&quot;home&quot;</span>, <span class="st">&quot;category&quot;</span>, <span class="st">&quot;product&quot;</span>, <span class="st">&quot;cart&quot;</span>, <span class="st">&quot;home&quot;</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">s8 =</span> <span class="fu">c</span>(<span class="st">&quot;home&quot;</span>, <span class="st">&quot;search&quot;</span>, <span class="st">&quot;product&quot;</span>, <span class="st">&quot;checkout&quot;</span>, <span class="st">&quot;home&quot;</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>raw_sequences <span class="ot">&lt;-</span> <span class="fu">do.call</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  rbind,</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">seq_along</span>(paths), <span class="cf">function</span>(i) {</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>      <span class="at">sequence_id =</span> <span class="fu">names</span>(paths)[i],</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>      <span class="at">sequence_order =</span> <span class="fu">seq_along</span>(paths[[i]]),</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>      <span class="at">state =</span> paths[[i]],</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>      <span class="at">duration =</span> <span class="dv">80</span> <span class="sc">+</span> <span class="dv">10</span> <span class="sc">*</span> <span class="fu">seq_along</span>(paths[[i]]) <span class="sc">+</span> i,</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>      <span class="at">participant_id =</span> <span class="fu">sprintf</span>(<span class="st">&quot;p%02d&quot;</span>, i),</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>      <span class="at">group =</span> <span class="cf">if</span> (i <span class="sc">&lt;=</span> <span class="dv">4</span><span class="dt">L</span>) <span class="st">&quot;interface_a&quot;</span> <span class="cf">else</span> <span class="st">&quot;interface_b&quot;</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>      <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>    )</span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  })</span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>)</span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>raw_sequences</span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt;    sequence_id sequence_order    state duration participant_id       group</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt; 1           s1              1     home       91            p01 interface_a</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#&gt; 2           s1              2   search      101            p01 interface_a</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="co">#&gt; 3           s1              3  product      111            p01 interface_a</span></span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a><span class="co">#&gt; 4           s1              4     cart      121            p01 interface_a</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="co">#&gt; 5           s1              5 checkout      131            p01 interface_a</span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="co">#&gt; 6           s2              1     home       92            p02 interface_a</span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a><span class="co">#&gt; 7           s2              2   search      102            p02 interface_a</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a><span class="co">#&gt; 8           s2              3  product      112            p02 interface_a</span></span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a><span class="co">#&gt; 9           s2              4     cart      122            p02 interface_a</span></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a><span class="co">#&gt; 10          s2              5     home      132            p02 interface_a</span></span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a><span class="co">#&gt; 11          s3              1     home       93            p03 interface_a</span></span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a><span class="co">#&gt; 12          s3              2 category      103            p03 interface_a</span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a><span class="co">#&gt; 13          s3              3  product      113            p03 interface_a</span></span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a><span class="co">#&gt; 14          s3              4     cart      123            p03 interface_a</span></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a><span class="co">#&gt; 15          s3              5 checkout      133            p03 interface_a</span></span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a><span class="co">#&gt; 16          s4              1     home       94            p04 interface_a</span></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a><span class="co">#&gt; 17          s4              2 category      104            p04 interface_a</span></span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a><span class="co">#&gt; 18          s4              3  product      114            p04 interface_a</span></span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a><span class="co">#&gt; 19          s4              4   search      124            p04 interface_a</span></span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a><span class="co">#&gt; 20          s4              5 checkout      134            p04 interface_a</span></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a><span class="co">#&gt; 21          s5              1     home       95            p05 interface_b</span></span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a><span class="co">#&gt; 22          s5              2 category      105            p05 interface_b</span></span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a><span class="co">#&gt; 23          s5              3   search      115            p05 interface_b</span></span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a><span class="co">#&gt; 24          s5              4  product      125            p05 interface_b</span></span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a><span class="co">#&gt; 25          s5              5 checkout      135            p05 interface_b</span></span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a><span class="co">#&gt; 26          s6              1     home       96            p06 interface_b</span></span>
+<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a><span class="co">#&gt; 27          s6              2   search      106            p06 interface_b</span></span>
+<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a><span class="co">#&gt; 28          s6              3 category      116            p06 interface_b</span></span>
+<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a><span class="co">#&gt; 29          s6              4  product      126            p06 interface_b</span></span>
+<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a><span class="co">#&gt; 30          s6              5     home      136            p06 interface_b</span></span>
+<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a><span class="co">#&gt; 31          s7              1     home       97            p07 interface_b</span></span>
+<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a><span class="co">#&gt; 32          s7              2 category      107            p07 interface_b</span></span>
+<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a><span class="co">#&gt; 33          s7              3  product      117            p07 interface_b</span></span>
+<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a><span class="co">#&gt; 34          s7              4     cart      127            p07 interface_b</span></span>
+<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a><span class="co">#&gt; 35          s7              5     home      137            p07 interface_b</span></span>
+<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a><span class="co">#&gt; 36          s8              1     home       98            p08 interface_b</span></span>
+<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a><span class="co">#&gt; 37          s8              2   search      108            p08 interface_b</span></span>
+<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a><span class="co">#&gt; 38          s8              3  product      118            p08 interface_b</span></span>
+<span id="cb1-67"><a href="#cb1-67" tabindex="-1"></a><span class="co">#&gt; 39          s8              4 checkout      128            p08 interface_b</span></span>
+<span id="cb1-68"><a href="#cb1-68" tabindex="-1"></a><span class="co">#&gt; 40          s8              5     home      138            p08 interface_b</span></span></code></pre></div>
+</div>
+<div id="audit-validate-and-prepare" class="section level2">
+<h2>Audit, validate, and prepare</h2>
+<p><code>audit_sequence_data()</code> returns a machine-readable issue
+table without modifying the input. <code>validate_sequence_data()</code>
+adds a compact status contract. <code>prepare_sequence_data()</code>
+applies explicit policies and returns canonical data, an audit trail,
+and a decision log.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>audit <span class="ot">&lt;-</span> <span class="fu">audit_sequence_data</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  raw_sequences,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;sequence_order&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">duration_col =</span> <span class="st">&quot;duration&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="fu">c</span>(<span class="st">&quot;participant_id&quot;</span>, <span class="st">&quot;group&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>validation <span class="ot">&lt;-</span> <span class="fu">validate_sequence_data</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  raw_sequences,</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;sequence_order&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="at">duration_col =</span> <span class="st">&quot;duration&quot;</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="fu">c</span>(<span class="st">&quot;participant_id&quot;</span>, <span class="st">&quot;group&quot;</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>)</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>prepared <span class="ot">&lt;-</span> <span class="fu">prepare_sequence_data</span>(</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  raw_sequences,</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;sequence_order&quot;</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="at">duration_col =</span> <span class="st">&quot;duration&quot;</span>,</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="fu">c</span>(<span class="st">&quot;participant_id&quot;</span>, <span class="st">&quot;group&quot;</span>),</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  <span class="at">missing_state_policy =</span> <span class="st">&quot;error&quot;</span>,</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  <span class="at">duplicate_position_policy =</span> <span class="st">&quot;error&quot;</span>,</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  <span class="at">repeated_state_policy =</span> <span class="st">&quot;preserve&quot;</span>,</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  <span class="at">zero_duration_policy =</span> <span class="st">&quot;preserve&quot;</span>,</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  <span class="at">unknown_state_policy =</span> <span class="st">&quot;preserve&quot;</span>,</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  <span class="at">unused_state_levels =</span> <span class="st">&quot;preserve&quot;</span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>)</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>validation<span class="sc">$</span>status</span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pass&quot;</span></span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>prepared<span class="sc">$</span>status</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt; [1] &quot;pass&quot;</span></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>prepared<span class="sc">$</span>mapping</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt;                      role  source_column</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt; 1             sequence_id    sequence_id</span></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt; 2          sequence_order sequence_order</span></span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt; 3                   state          state</span></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt; 4                duration       duration</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt; 5 metadata:participant_id participant_id</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; 6          metadata:group          group</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a>prepared<span class="sc">$</span>decisions</span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt;                   step             policy affected_rows</span></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt; 1       missing_states              error             0</span></span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; 2       unknown_states           preserve             0</span></span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; 3       zero_durations           preserve             0</span></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; 4 duplicated_positions              error             0</span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; 5            row_order deterministic_sort             0</span></span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt; 6  consecutive_repeats           preserve             0</span></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co">#&gt; 7  unused_state_levels           preserve             0</span></span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a><span class="co">#&gt; 8       column_mapping       canonicalise            40</span></span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a><span class="co">#&gt;                                                                       details</span></span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a><span class="co">#&gt; 1                          Missing states were retained as unresolved errors.</span></span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a><span class="co">#&gt; 2                                   Unknown states were preserved for review.</span></span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a><span class="co">#&gt; 3                                          Zero-duration rows were preserved.</span></span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a><span class="co">#&gt; 4                    Duplicated positions were retained as unresolved errors.</span></span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a><span class="co">#&gt; 5 Rows were ordered by sequence identifier, sequence order, and original row.</span></span>
+<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a><span class="co">#&gt; 6                                 Consecutive repeated states were preserved.</span></span>
+<span id="cb2-63"><a href="#cb2-63" tabindex="-1"></a><span class="co">#&gt; 7                                        Unused factor levels were preserved.</span></span>
+<span id="cb2-64"><a href="#cb2-64" tabindex="-1"></a><span class="co">#&gt; 8     Mapped columns were standardised while unmapped columns were preserved.</span></span>
+<span id="cb2-65"><a href="#cb2-65" tabindex="-1"></a><span class="fu">head</span>(prepared<span class="sc">$</span>data)</span>
+<span id="cb2-66"><a href="#cb2-66" tabindex="-1"></a><span class="co">#&gt;   sequence_id sequence_order    state original_row duration participant_id</span></span>
+<span id="cb2-67"><a href="#cb2-67" tabindex="-1"></a><span class="co">#&gt; 1          s1              1     home            1       91            p01</span></span>
+<span id="cb2-68"><a href="#cb2-68" tabindex="-1"></a><span class="co">#&gt; 2          s1              2   search            2      101            p01</span></span>
+<span id="cb2-69"><a href="#cb2-69" tabindex="-1"></a><span class="co">#&gt; 3          s1              3  product            3      111            p01</span></span>
+<span id="cb2-70"><a href="#cb2-70" tabindex="-1"></a><span class="co">#&gt; 4          s1              4     cart            4      121            p01</span></span>
+<span id="cb2-71"><a href="#cb2-71" tabindex="-1"></a><span class="co">#&gt; 5          s1              5 checkout            5      131            p01</span></span>
+<span id="cb2-72"><a href="#cb2-72" tabindex="-1"></a><span class="co">#&gt; 6          s2              1     home            6       92            p02</span></span>
+<span id="cb2-73"><a href="#cb2-73" tabindex="-1"></a><span class="co">#&gt;         group</span></span>
+<span id="cb2-74"><a href="#cb2-74" tabindex="-1"></a><span class="co">#&gt; 1 interface_a</span></span>
+<span id="cb2-75"><a href="#cb2-75" tabindex="-1"></a><span class="co">#&gt; 2 interface_a</span></span>
+<span id="cb2-76"><a href="#cb2-76" tabindex="-1"></a><span class="co">#&gt; 3 interface_a</span></span>
+<span id="cb2-77"><a href="#cb2-77" tabindex="-1"></a><span class="co">#&gt; 4 interface_a</span></span>
+<span id="cb2-78"><a href="#cb2-78" tabindex="-1"></a><span class="co">#&gt; 5 interface_a</span></span>
+<span id="cb2-79"><a href="#cb2-79" tabindex="-1"></a><span class="co">#&gt; 6 interface_a</span></span></code></pre></div>
+</div>
+<div id="encode-states-and-inspect-basic-structure" class="section level2">
+<h2>Encode states and inspect basic structure</h2>
+<p>State codes are transparent identifiers derived from a deterministic
+state ordering. The state, transition, and path helpers describe the
+observed structure without assigning substantive meaning to the
+labels.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>encoded <span class="ot">&lt;-</span> <span class="fu">encode_sequence_data</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;sequence_order&quot;</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">duration_col =</span> <span class="st">&quot;duration&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="fu">c</span>(<span class="st">&quot;participant_id&quot;</span>, <span class="st">&quot;group&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>state_summary <span class="ot">&lt;-</span> <span class="fu">summarise_sequence_states</span>(</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;sequence_order&quot;</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="at">duration_col =</span> <span class="st">&quot;duration&quot;</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="fu">c</span>(<span class="st">&quot;participant_id&quot;</span>, <span class="st">&quot;group&quot;</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>)</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>transition_summary <span class="ot">&lt;-</span> <span class="fu">summarise_sequence_transitions</span>(</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;sequence_order&quot;</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="fu">c</span>(<span class="st">&quot;participant_id&quot;</span>, <span class="st">&quot;group&quot;</span>),</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>  <span class="at">include_self =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>)</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>paths_table <span class="ot">&lt;-</span> <span class="fu">format_sequence_paths</span>(</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;sequence_order&quot;</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="fu">c</span>(<span class="st">&quot;participant_id&quot;</span>, <span class="st">&quot;group&quot;</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>)</span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>encoded<span class="sc">$</span>dictionary</span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt;      state state_index state_code observed</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt; 1     cart           1         S1     TRUE</span></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt; 2 category           2         S2     TRUE</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt; 3 checkout           3         S3     TRUE</span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt; 4     home           4         S4     TRUE</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt; 5  product           5         S5     TRUE</span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt; 6   search           6         S6     TRUE</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>state_summary<span class="sc">$</span>overall</span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co">#&gt;      state n_sequences sequence_proportion n_observations</span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co">#&gt; 1     home           8               1.000             12</span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="co">#&gt; 2   search           6               0.750              6</span></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="co">#&gt; 3  product           8               1.000              8</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a><span class="co">#&gt; 4     cart           4               0.500              4</span></span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a><span class="co">#&gt; 5 checkout           5               0.625              5</span></span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a><span class="co">#&gt; 6 category           5               0.625              5</span></span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a><span class="co">#&gt;   observation_proportion duration_sum duration_proportion mean_duration</span></span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a><span class="co">#&gt; 1                  0.300         1299           0.2836245      108.2500</span></span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a><span class="co">#&gt; 2                  0.150          656           0.1432314      109.3333</span></span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a><span class="co">#&gt; 3                  0.200          936           0.2043668      117.0000</span></span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a><span class="co">#&gt; 4                  0.100          493           0.1076419      123.2500</span></span>
+<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a><span class="co">#&gt; 5                  0.125          661           0.1443231      132.2000</span></span>
+<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a><span class="co">#&gt; 6                  0.125          535           0.1168122      107.0000</span></span>
+<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a><span class="fu">head</span>(transition_summary<span class="sc">$</span>overall)</span>
+<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a><span class="co">#&gt;   from_state to_state n_sequences sequence_proportion n_transitions</span></span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a><span class="co">#&gt; 1       home   search           4                0.50             4</span></span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a><span class="co">#&gt; 2     search  product           4                0.50             4</span></span>
+<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a><span class="co">#&gt; 3    product     cart           4                0.50             4</span></span>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a><span class="co">#&gt; 4       cart checkout           2                0.25             2</span></span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a><span class="co">#&gt; 5       cart     home           2                0.25             2</span></span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a><span class="co">#&gt; 6       home category           4                0.50             4</span></span>
+<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a><span class="co">#&gt;   transition_proportion origin_transition_proportion</span></span>
+<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a><span class="co">#&gt; 1                0.1250                    0.5000000</span></span>
+<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a><span class="co">#&gt; 2                0.1250                    0.6666667</span></span>
+<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a><span class="co">#&gt; 3                0.1250                    0.5000000</span></span>
+<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a><span class="co">#&gt; 4                0.0625                    0.5000000</span></span>
+<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a><span class="co">#&gt; 5                0.0625                    0.5000000</span></span>
+<span id="cb3-73"><a href="#cb3-73" tabindex="-1"></a><span class="co">#&gt; 6                0.1250                    0.5000000</span></span>
+<span id="cb3-74"><a href="#cb3-74" tabindex="-1"></a>paths_table<span class="sc">$</span>paths</span>
+<span id="cb3-75"><a href="#cb3-75" tabindex="-1"></a><span class="co">#&gt;   sequence_id participant_id       group n_observations n_states</span></span>
+<span id="cb3-76"><a href="#cb3-76" tabindex="-1"></a><span class="co">#&gt; 1          s1            p01 interface_a              5        5</span></span>
+<span id="cb3-77"><a href="#cb3-77" tabindex="-1"></a><span class="co">#&gt; 2          s2            p02 interface_a              5        5</span></span>
+<span id="cb3-78"><a href="#cb3-78" tabindex="-1"></a><span class="co">#&gt; 3          s3            p03 interface_a              5        5</span></span>
+<span id="cb3-79"><a href="#cb3-79" tabindex="-1"></a><span class="co">#&gt; 4          s4            p04 interface_a              5        5</span></span>
+<span id="cb3-80"><a href="#cb3-80" tabindex="-1"></a><span class="co">#&gt; 5          s5            p05 interface_b              5        5</span></span>
+<span id="cb3-81"><a href="#cb3-81" tabindex="-1"></a><span class="co">#&gt; 6          s6            p06 interface_b              5        5</span></span>
+<span id="cb3-82"><a href="#cb3-82" tabindex="-1"></a><span class="co">#&gt; 7          s7            p07 interface_b              5        5</span></span>
+<span id="cb3-83"><a href="#cb3-83" tabindex="-1"></a><span class="co">#&gt; 8          s8            p08 interface_b              5        5</span></span>
+<span id="cb3-84"><a href="#cb3-84" tabindex="-1"></a><span class="co">#&gt;   n_unique_states start_state end_state</span></span>
+<span id="cb3-85"><a href="#cb3-85" tabindex="-1"></a><span class="co">#&gt; 1               5        home  checkout</span></span>
+<span id="cb3-86"><a href="#cb3-86" tabindex="-1"></a><span class="co">#&gt; 2               4        home      home</span></span>
+<span id="cb3-87"><a href="#cb3-87" tabindex="-1"></a><span class="co">#&gt; 3               5        home  checkout</span></span>
+<span id="cb3-88"><a href="#cb3-88" tabindex="-1"></a><span class="co">#&gt; 4               5        home  checkout</span></span>
+<span id="cb3-89"><a href="#cb3-89" tabindex="-1"></a><span class="co">#&gt; 5               5        home  checkout</span></span>
+<span id="cb3-90"><a href="#cb3-90" tabindex="-1"></a><span class="co">#&gt; 6               4        home      home</span></span>
+<span id="cb3-91"><a href="#cb3-91" tabindex="-1"></a><span class="co">#&gt; 7               4        home      home</span></span>
+<span id="cb3-92"><a href="#cb3-92" tabindex="-1"></a><span class="co">#&gt; 8               4        home      home</span></span>
+<span id="cb3-93"><a href="#cb3-93" tabindex="-1"></a><span class="co">#&gt;                                            path</span></span>
+<span id="cb3-94"><a href="#cb3-94" tabindex="-1"></a><span class="co">#&gt; 1     home &gt; search &gt; product &gt; cart &gt; checkout</span></span>
+<span id="cb3-95"><a href="#cb3-95" tabindex="-1"></a><span class="co">#&gt; 2         home &gt; search &gt; product &gt; cart &gt; home</span></span>
+<span id="cb3-96"><a href="#cb3-96" tabindex="-1"></a><span class="co">#&gt; 3   home &gt; category &gt; product &gt; cart &gt; checkout</span></span>
+<span id="cb3-97"><a href="#cb3-97" tabindex="-1"></a><span class="co">#&gt; 4 home &gt; category &gt; product &gt; search &gt; checkout</span></span>
+<span id="cb3-98"><a href="#cb3-98" tabindex="-1"></a><span class="co">#&gt; 5 home &gt; category &gt; search &gt; product &gt; checkout</span></span>
+<span id="cb3-99"><a href="#cb3-99" tabindex="-1"></a><span class="co">#&gt; 6     home &gt; search &gt; category &gt; product &gt; home</span></span>
+<span id="cb3-100"><a href="#cb3-100" tabindex="-1"></a><span class="co">#&gt; 7       home &gt; category &gt; product &gt; cart &gt; home</span></span>
+<span id="cb3-101"><a href="#cb3-101" tabindex="-1"></a><span class="co">#&gt; 8     home &gt; search &gt; product &gt; checkout &gt; home</span></span></code></pre></div>
+</div>
+<div id="discover-contiguous-motifs" class="section level2">
+<h2>Discover contiguous motifs</h2>
+<p>Motifs are exact contiguous state windows. Their lengths, overlap
+rule, prevalence denominator, filtering thresholds, and tie policy
+remain explicit.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>motif_occurrences <span class="ot">&lt;-</span> <span class="fu">extract_sequence_ngrams</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">sequence_id_col =</span> <span class="st">&quot;sequence_id&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">order_col =</span> <span class="st">&quot;sequence_order&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">state_col =</span> <span class="st">&quot;state&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="st">&quot;group&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">min_length =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">max_length =</span> <span class="dv">3</span><span class="dt">L</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">overlap =</span> <span class="st">&quot;allow&quot;</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>motif_summary <span class="ot">&lt;-</span> <span class="fu">summarise_sequence_motifs</span>(motif_occurrences)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>motif_filter <span class="ot">&lt;-</span> <span class="fu">filter_sequence_motifs</span>(</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  motif_summary,</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="at">min_occurrences =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="at">min_sequences =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="at">min_prevalence =</span> <span class="fl">0.20</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="at">motif_lengths =</span> <span class="fu">c</span>(<span class="dv">2</span><span class="dt">L</span>, <span class="dv">3</span><span class="dt">L</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="at">top_n =</span> <span class="dv">10</span><span class="dt">L</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="at">rank_by =</span> <span class="st">&quot;sequence_prevalence&quot;</span>,</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="at">ties =</span> <span class="st">&quot;include&quot;</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>)</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>motif_table <span class="ot">&lt;-</span> <span class="fu">format_sequence_motifs</span>(</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>  motif_filter,</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  <span class="at">prevalence =</span> <span class="st">&quot;percent&quot;</span>,</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">1</span><span class="dt">L</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>)</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>motif_table<span class="sc">$</span>table</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt;    rank    motif_id motif_key                       motif motif_length</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; 1     1    L2:S2|S5     S2|S5          category &gt; product            2</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; 2     1    L2:S4|S2     S4|S2             home &gt; category            2</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; 3     1    L2:S4|S6     S4|S6               home &gt; search            2</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; 4     1    L2:S5|S1     S5|S1              product &gt; cart            2</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; 5     1    L2:S6|S5     S6|S5            search &gt; product            2</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; 6     6 L3:S4|S2|S5  S4|S2|S5   home &gt; category &gt; product            3</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; 7     6 L3:S4|S6|S5  S4|S6|S5     home &gt; search &gt; product            3</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; 8     8    L2:S1|S3     S1|S3             cart &gt; checkout            2</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; 9     8    L2:S1|S4     S1|S4                 cart &gt; home            2</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt; 10    8    L2:S5|S3     S5|S3          product &gt; checkout            2</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt; 11    8 L3:S2|S5|S1  S2|S5|S1   category &gt; product &gt; cart            3</span></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="co">#&gt; 12    8 L3:S5|S1|S3  S5|S1|S3   product &gt; cart &gt; checkout            3</span></span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a><span class="co">#&gt; 13    8 L3:S5|S1|S4  S5|S1|S4       product &gt; cart &gt; home            3</span></span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a><span class="co">#&gt; 14    8 L3:S6|S5|S1  S6|S5|S1     search &gt; product &gt; cart            3</span></span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a><span class="co">#&gt; 15    8 L3:S6|S5|S3  S6|S5|S3 search &gt; product &gt; checkout            3</span></span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a><span class="co">#&gt;    n_occurrences n_sequences sequence_prevalence_percent</span></span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a><span class="co">#&gt; 1              4           4                        50.0</span></span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a><span class="co">#&gt; 2              4           4                        50.0</span></span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a><span class="co">#&gt; 3              4           4                        50.0</span></span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a><span class="co">#&gt; 4              4           4                        50.0</span></span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a><span class="co">#&gt; 5              4           4                        50.0</span></span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a><span class="co">#&gt; 6              3           3                        37.5</span></span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a><span class="co">#&gt; 7              3           3                        37.5</span></span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a><span class="co">#&gt; 8              2           2                        25.0</span></span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a><span class="co">#&gt; 9              2           2                        25.0</span></span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a><span class="co">#&gt; 10             2           2                        25.0</span></span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a><span class="co">#&gt; 11             2           2                        25.0</span></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a><span class="co">#&gt; 12             2           2                        25.0</span></span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a><span class="co">#&gt; 13             2           2                        25.0</span></span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a><span class="co">#&gt; 14             2           2                        25.0</span></span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a><span class="co">#&gt; 15             2           2                        25.0</span></span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a><span class="co">#&gt;    occurrence_share_percent mean_occurrences_per_sequence</span></span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a><span class="co">#&gt; 1                       7.1                           0.5</span></span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a><span class="co">#&gt; 2                       7.1                           0.5</span></span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a><span class="co">#&gt; 3                       7.1                           0.5</span></span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a><span class="co">#&gt; 4                       7.1                           0.5</span></span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a><span class="co">#&gt; 5                       7.1                           0.5</span></span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a><span class="co">#&gt; 6                       5.4                           0.4</span></span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a><span class="co">#&gt; 7                       5.4                           0.4</span></span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a><span class="co">#&gt; 8                       3.6                           0.2</span></span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a><span class="co">#&gt; 9                       3.6                           0.2</span></span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a><span class="co">#&gt; 10                      3.6                           0.2</span></span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a><span class="co">#&gt; 11                      3.6                           0.2</span></span>
+<span id="cb4-76"><a href="#cb4-76" tabindex="-1"></a><span class="co">#&gt; 12                      3.6                           0.2</span></span>
+<span id="cb4-77"><a href="#cb4-77" tabindex="-1"></a><span class="co">#&gt; 13                      3.6                           0.2</span></span>
+<span id="cb4-78"><a href="#cb4-78" tabindex="-1"></a><span class="co">#&gt; 14                      3.6                           0.2</span></span>
+<span id="cb4-79"><a href="#cb4-79" tabindex="-1"></a><span class="co">#&gt; 15                      3.6                           0.2</span></span>
+<span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a><span class="co">#&gt;    mean_occurrences_when_present</span></span>
+<span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a><span class="co">#&gt; 1                              1</span></span>
+<span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a><span class="co">#&gt; 2                              1</span></span>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a><span class="co">#&gt; 3                              1</span></span>
+<span id="cb4-84"><a href="#cb4-84" tabindex="-1"></a><span class="co">#&gt; 4                              1</span></span>
+<span id="cb4-85"><a href="#cb4-85" tabindex="-1"></a><span class="co">#&gt; 5                              1</span></span>
+<span id="cb4-86"><a href="#cb4-86" tabindex="-1"></a><span class="co">#&gt; 6                              1</span></span>
+<span id="cb4-87"><a href="#cb4-87" tabindex="-1"></a><span class="co">#&gt; 7                              1</span></span>
+<span id="cb4-88"><a href="#cb4-88" tabindex="-1"></a><span class="co">#&gt; 8                              1</span></span>
+<span id="cb4-89"><a href="#cb4-89" tabindex="-1"></a><span class="co">#&gt; 9                              1</span></span>
+<span id="cb4-90"><a href="#cb4-90" tabindex="-1"></a><span class="co">#&gt; 10                             1</span></span>
+<span id="cb4-91"><a href="#cb4-91" tabindex="-1"></a><span class="co">#&gt; 11                             1</span></span>
+<span id="cb4-92"><a href="#cb4-92" tabindex="-1"></a><span class="co">#&gt; 12                             1</span></span>
+<span id="cb4-93"><a href="#cb4-93" tabindex="-1"></a><span class="co">#&gt; 13                             1</span></span>
+<span id="cb4-94"><a href="#cb4-94" tabindex="-1"></a><span class="co">#&gt; 14                             1</span></span>
+<span id="cb4-95"><a href="#cb4-95" tabindex="-1"></a><span class="co">#&gt; 15                             1</span></span></code></pre></div>
+</div>
+<div id="compare-sequences-through-distances-and-clustering" class="section level2">
+<h2>Compare sequences through distances and clustering</h2>
+<p>Distance choice is part of the analysis specification. This example
+uses LCS distance followed by average-linkage hierarchical clustering.
+Validation summaries describe the supplied solution; they do not prove
+that the clusters are natural or substantively meaningful.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>lcs_distance <span class="ot">&lt;-</span> <span class="fu">compute_sequence_distance</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;lcs&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">normalise =</span> <span class="st">&quot;max_length&quot;</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>cluster_fit <span class="ot">&lt;-</span> <span class="fu">cluster_sequences</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  lcs_distance,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">k =</span> <span class="dv">2</span><span class="dt">L</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;hierarchical&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="at">linkage =</span> <span class="st">&quot;average&quot;</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>cluster_validation <span class="ot">&lt;-</span> <span class="fu">validate_sequence_clusters</span>(cluster_fit)</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>representatives <span class="ot">&lt;-</span> <span class="fu">extract_representative_sequences</span>(cluster_fit)</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="fu">summarise_sequence_distance</span>(lcs_distance)<span class="sc">$</span>overall</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt;   n_sequences n_pairs mean_distance median_distance min_distance max_distance</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; 1           8      28     0.6142857             0.6          0.4          1.2</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>cluster_fit<span class="sc">$</span>assignments</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; s1 s2 s3 s4 s5 s6 s7 s8 </span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt;  1  1  2  2  2  1  1  1</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>cluster_validation<span class="sc">$</span>overall</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt;   n_sequences n_clusters average_silhouette minimum_silhouette dunn_index</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; 1           8          2          0.3100965         -0.1111111        0.5</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt;   within_between_ratio singleton_clusters</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; 1            0.6837607                  0</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>representatives</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt;   cluster rank sequence_id mean_within_distance</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt; 1       1    1          s2                  0.4</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt; 2       2    1          s3                  0.4</span></span></code></pre></div>
+</div>
+<div id="consensus-and-descriptive-group-comparison" class="section level2">
+<h2>Consensus and descriptive group comparison</h2>
+<p>Aligned-position consensus and group contrasts remain descriptive.
+The consensus is not a behavioural norm, and contrasts do not establish
+a causal mechanism.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>consensus <span class="ot">&lt;-</span> <span class="fu">create_consensus_sequence</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">group_cols =</span> <span class="st">&quot;group&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">tie_method =</span> <span class="st">&quot;first&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">state_levels =</span> encoded<span class="sc">$</span>dictionary<span class="sc">$</span>state</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>group_comparison <span class="ot">&lt;-</span> <span class="fu">compare_sequence_groups</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">group_col =</span> <span class="st">&quot;group&quot;</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>)</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="fu">summarise_consensus_agreement</span>(consensus, <span class="at">by =</span> <span class="st">&quot;group&quot;</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;         group n_positions mean_agreement median_agreement min_agreement</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; 1 interface_a           5           0.80             0.75           0.5</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; 2 interface_b           5           0.65             0.50           0.5</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;   max_agreement weighted_agreement n_ties n_below_threshold threshold</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; 1             1               0.80      1                 0       0.5</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; 2             1               0.65      1                 0       0.5</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="fu">format_consensus_sequence</span>(consensus, <span class="at">include_agreement =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;         group</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; 1 interface_a</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; 2 interface_b</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt;                                                                                      path</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; 1 home [1.000] -&gt; category [0.500] -&gt; product [1.000] -&gt; cart [0.750] -&gt; checkout [0.750]</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt; 2  home [1.000] -&gt; category [0.500] -&gt; product [0.500] -&gt; product [0.500] -&gt; home [0.750]</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt;   n_positions</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt; 1           5</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt; 2           5</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="fu">head</span>(group_comparison<span class="sc">$</span>state_contrasts)</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt;       group_1     group_2    state event_share_group_1 event_share_group_2</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt; 1 interface_a interface_b     cart                0.15                0.05</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt; 2 interface_a interface_b category                0.10                0.15</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt; 3 interface_a interface_b checkout                0.15                0.10</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt; 4 interface_a interface_b     home                0.25                0.35</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt; 5 interface_a interface_b  product                0.20                0.20</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt; 6 interface_a interface_b   search                0.15                0.15</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#&gt;   event_share_difference event_share_ratio sequence_prevalence_group_1</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co">#&gt; 1                   0.10         3.0000000                        0.75</span></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co">#&gt; 2                  -0.05         0.6666667                        0.50</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#&gt; 3                   0.05         1.5000000                        0.75</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co">#&gt; 4                  -0.10         0.7142857                        1.00</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a><span class="co">#&gt; 5                   0.00         1.0000000                        1.00</span></span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a><span class="co">#&gt; 6                   0.00         1.0000000                        0.75</span></span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a><span class="co">#&gt;   sequence_prevalence_group_2 sequence_prevalence_difference</span></span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a><span class="co">#&gt; 1                        0.25                           0.50</span></span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a><span class="co">#&gt; 2                        0.75                          -0.25</span></span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a><span class="co">#&gt; 3                        0.50                           0.25</span></span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a><span class="co">#&gt; 4                        1.00                           0.00</span></span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a><span class="co">#&gt; 5                        1.00                           0.00</span></span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a><span class="co">#&gt; 6                        0.75                           0.00</span></span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a><span class="co">#&gt;   sequence_prevalence_ratio</span></span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a><span class="co">#&gt; 1                 3.0000000</span></span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a><span class="co">#&gt; 2                 0.6666667</span></span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a><span class="co">#&gt; 3                 1.5000000</span></span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a><span class="co">#&gt; 4                 1.0000000</span></span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a><span class="co">#&gt; 5                 1.0000000</span></span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a><span class="co">#&gt; 6                 1.0000000</span></span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a><span class="fu">head</span>(group_comparison<span class="sc">$</span>transition_contrasts)</span>
+<span id="cb6-60"><a href="#cb6-60" tabindex="-1"></a><span class="co">#&gt;       group_1     group_2          transition occurrence_share_group_1</span></span>
+<span id="cb6-61"><a href="#cb6-61" tabindex="-1"></a><span class="co">#&gt; 1 interface_a interface_b    cart -&gt; checkout                   0.1250</span></span>
+<span id="cb6-62"><a href="#cb6-62" tabindex="-1"></a><span class="co">#&gt; 2 interface_a interface_b        cart -&gt; home                   0.0625</span></span>
+<span id="cb6-63"><a href="#cb6-63" tabindex="-1"></a><span class="co">#&gt; 3 interface_a interface_b category -&gt; product                   0.1250</span></span>
+<span id="cb6-64"><a href="#cb6-64" tabindex="-1"></a><span class="co">#&gt; 4 interface_a interface_b    home -&gt; category                   0.1250</span></span>
+<span id="cb6-65"><a href="#cb6-65" tabindex="-1"></a><span class="co">#&gt; 5 interface_a interface_b      home -&gt; search                   0.1250</span></span>
+<span id="cb6-66"><a href="#cb6-66" tabindex="-1"></a><span class="co">#&gt; 6 interface_a interface_b     product -&gt; cart                   0.1875</span></span>
+<span id="cb6-67"><a href="#cb6-67" tabindex="-1"></a><span class="co">#&gt;   occurrence_share_group_2 occurrence_share_difference occurrence_share_ratio</span></span>
+<span id="cb6-68"><a href="#cb6-68" tabindex="-1"></a><span class="co">#&gt; 1                   0.0000                       0.125                     NA</span></span>
+<span id="cb6-69"><a href="#cb6-69" tabindex="-1"></a><span class="co">#&gt; 2                   0.0625                       0.000                      1</span></span>
+<span id="cb6-70"><a href="#cb6-70" tabindex="-1"></a><span class="co">#&gt; 3                   0.1250                       0.000                      1</span></span>
+<span id="cb6-71"><a href="#cb6-71" tabindex="-1"></a><span class="co">#&gt; 4                   0.1250                       0.000                      1</span></span>
+<span id="cb6-72"><a href="#cb6-72" tabindex="-1"></a><span class="co">#&gt; 5                   0.1250                       0.000                      1</span></span>
+<span id="cb6-73"><a href="#cb6-73" tabindex="-1"></a><span class="co">#&gt; 6                   0.0625                       0.125                      3</span></span>
+<span id="cb6-74"><a href="#cb6-74" tabindex="-1"></a><span class="co">#&gt;   sequence_prevalence_group_1 sequence_prevalence_group_2</span></span>
+<span id="cb6-75"><a href="#cb6-75" tabindex="-1"></a><span class="co">#&gt; 1                        0.50                        0.00</span></span>
+<span id="cb6-76"><a href="#cb6-76" tabindex="-1"></a><span class="co">#&gt; 2                        0.25                        0.25</span></span>
+<span id="cb6-77"><a href="#cb6-77" tabindex="-1"></a><span class="co">#&gt; 3                        0.50                        0.50</span></span>
+<span id="cb6-78"><a href="#cb6-78" tabindex="-1"></a><span class="co">#&gt; 4                        0.50                        0.50</span></span>
+<span id="cb6-79"><a href="#cb6-79" tabindex="-1"></a><span class="co">#&gt; 5                        0.50                        0.50</span></span>
+<span id="cb6-80"><a href="#cb6-80" tabindex="-1"></a><span class="co">#&gt; 6                        0.75                        0.25</span></span>
+<span id="cb6-81"><a href="#cb6-81" tabindex="-1"></a><span class="co">#&gt;   sequence_prevalence_difference sequence_prevalence_ratio</span></span>
+<span id="cb6-82"><a href="#cb6-82" tabindex="-1"></a><span class="co">#&gt; 1                            0.5                        NA</span></span>
+<span id="cb6-83"><a href="#cb6-83" tabindex="-1"></a><span class="co">#&gt; 2                            0.0                         1</span></span>
+<span id="cb6-84"><a href="#cb6-84" tabindex="-1"></a><span class="co">#&gt; 3                            0.0                         1</span></span>
+<span id="cb6-85"><a href="#cb6-85" tabindex="-1"></a><span class="co">#&gt; 4                            0.0                         1</span></span>
+<span id="cb6-86"><a href="#cb6-86" tabindex="-1"></a><span class="co">#&gt; 5                            0.0                         1</span></span>
+<span id="cb6-87"><a href="#cb6-87" tabindex="-1"></a><span class="co">#&gt; 6                            0.5                         3</span></span>
+<span id="cb6-88"><a href="#cb6-88" tabindex="-1"></a>group_comparison<span class="sc">$</span>length_contrasts</span>
+<span id="cb6-89"><a href="#cb6-89" tabindex="-1"></a><span class="co">#&gt;       group_1     group_2 mean_length_group_1 mean_length_group_2</span></span>
+<span id="cb6-90"><a href="#cb6-90" tabindex="-1"></a><span class="co">#&gt; 1 interface_a interface_b                   5                   5</span></span>
+<span id="cb6-91"><a href="#cb6-91" tabindex="-1"></a><span class="co">#&gt;   mean_length_difference median_length_group_1 median_length_group_2</span></span>
+<span id="cb6-92"><a href="#cb6-92" tabindex="-1"></a><span class="co">#&gt; 1                      0                     5                     5</span></span>
+<span id="cb6-93"><a href="#cb6-93" tabindex="-1"></a><span class="co">#&gt;   median_length_difference</span></span>
+<span id="cb6-94"><a href="#cb6-94" tabindex="-1"></a><span class="co">#&gt; 1                        0</span></span></code></pre></div>
+</div>
+<div id="transition-structure" class="section level2">
+<h2>Transition structure</h2>
+<p>A first-order transition network summarises observed state-to-state
+movement. Centrality and community outputs are graph descriptors, not
+measures of attention, influence, preference, or intention.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>network <span class="ot">&lt;-</span> <span class="fu">create_transition_network</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  prepared<span class="sc">$</span>data,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">normalise =</span> <span class="st">&quot;from&quot;</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">include_self =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>network</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;    group_key  context from_state to_state count sequence_count</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; 1    __all__     cart       cart checkout     2              2</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; 2    __all__     cart       cart     home     2              2</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; 3    __all__ category   category  product     4              4</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 4    __all__ category   category   search     1              1</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; 5    __all__ checkout   checkout     home     1              1</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; 6    __all__     home       home category     4              4</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; 7    __all__     home       home   search     4              4</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; 8    __all__  product    product     cart     4              4</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; 9    __all__  product    product checkout     2              2</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; 10   __all__  product    product     home     1              1</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; 11   __all__  product    product   search     1              1</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; 12   __all__   search     search category     1              1</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; 13   __all__   search     search checkout     1              1</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; 14   __all__   search     search  product     4              4</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt;    sequence_prevalence    weight</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt; 1                0.250 0.5000000</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co">#&gt; 2                0.250 0.5000000</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt; 3                0.500 0.8000000</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co">#&gt; 4                0.125 0.2000000</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co">#&gt; 5                0.125 1.0000000</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#&gt; 6                0.500 0.5000000</span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt; 7                0.500 0.5000000</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a><span class="co">#&gt; 8                0.500 0.5000000</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#&gt; 9                0.250 0.2500000</span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a><span class="co">#&gt; 10               0.125 0.1250000</span></span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a><span class="co">#&gt; 11               0.125 0.1250000</span></span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="co">#&gt; 12               0.125 0.1666667</span></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#&gt; 13               0.125 0.1666667</span></span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a><span class="co">#&gt; 14               0.500 0.6666667</span></span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a><span class="fu">summarise_transition_centrality</span>(network)</span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a><span class="co">#&gt;      state out_degree in_degree total_degree out_strength in_strength</span></span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a><span class="co">#&gt; 1     cart          2         1            3            1   0.5000000</span></span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a><span class="co">#&gt; 2 category          2         2            4            1   0.6666667</span></span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a><span class="co">#&gt; 3 checkout          1         3            4            1   0.9166667</span></span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a><span class="co">#&gt; 4     home          2         3            5            1   1.6250000</span></span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a><span class="co">#&gt; 5  product          4         2            6            1   1.4666667</span></span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a><span class="co">#&gt; 6   search          3         3            6            1   0.8250000</span></span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a><span class="co">#&gt;   total_strength closeness betweenness  pagerank</span></span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a><span class="co">#&gt; 1       1.500000 0.2898551         0.0 0.1162551</span></span>
+<span id="cb7-48"><a href="#cb7-48" tabindex="-1"></a><span class="co">#&gt; 2       1.666667 0.2500000         2.5 0.1415007</span></span>
+<span id="cb7-49"><a href="#cb7-49" tabindex="-1"></a><span class="co">#&gt; 3       1.916667 0.2857143         0.5 0.1434103</span></span>
+<span id="cb7-50"><a href="#cb7-50" tabindex="-1"></a><span class="co">#&gt; 4       2.625000 0.2531646         7.5 0.2191209</span></span>
+<span id="cb7-51"><a href="#cb7-51" tabindex="-1"></a><span class="co">#&gt; 5       2.466667 0.2272727         6.0 0.2147178</span></span>
+<span id="cb7-52"><a href="#cb7-52" tabindex="-1"></a><span class="co">#&gt; 6       1.825000 0.2272727         4.5 0.1649953</span></span>
+<span id="cb7-53"><a href="#cb7-53" tabindex="-1"></a><span class="fu">detect_transition_communities</span>(network)</span>
+<span id="cb7-54"><a href="#cb7-54" tabindex="-1"></a><span class="co">#&gt;      state community</span></span>
+<span id="cb7-55"><a href="#cb7-55" tabindex="-1"></a><span class="co">#&gt; 1     cart         1</span></span>
+<span id="cb7-56"><a href="#cb7-56" tabindex="-1"></a><span class="co">#&gt; 2 category         2</span></span>
+<span id="cb7-57"><a href="#cb7-57" tabindex="-1"></a><span class="co">#&gt; 3 checkout         1</span></span>
+<span id="cb7-58"><a href="#cb7-58" tabindex="-1"></a><span class="co">#&gt; 4     home         1</span></span>
+<span id="cb7-59"><a href="#cb7-59" tabindex="-1"></a><span class="co">#&gt; 5  product         2</span></span>
+<span id="cb7-60"><a href="#cb7-60" tabindex="-1"></a><span class="co">#&gt; 6   search         2</span></span></code></pre></div>
+</div>
+<div id="continue-with-focused-articles" class="section level2">
+<h2>Continue with focused articles</h2>
+<p>The package website contains focused articles for motif positions,
+consensus and groups, distances and clustering, transition networks,
+latent models, and optional ecosystem adapters. The method-selection
+article provides a compact guide to choosing among them.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

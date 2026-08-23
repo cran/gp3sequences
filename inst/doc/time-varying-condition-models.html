@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Time-Varying Condition Comparisons</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Time-Varying Condition Comparisons</h1>
+
+
+
+<div id="model-target" class="section level2">
+<h2>Model target</h2>
+<p><code>fit_time_varying_sequence_model()</code> estimates the
+probability of a declared state or transition over aligned sequence
+time. It uses group-specific smooths and can include a participant
+random-effect smooth. The model concerns a predeclared structural
+outcome, not an unobserved psychological state.</p>
+</div>
+<div id="synthetic-repeated-sequences" class="section level2">
+<h2>Synthetic repeated sequences</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>participants <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;p&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">24</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">do.call</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  rbind,</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">seq_along</span>(participants), <span class="cf">function</span>(i) {</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    time <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    group <span class="ot">&lt;-</span> <span class="cf">if</span> (i <span class="sc">&lt;=</span> <span class="dv">12</span><span class="dt">L</span>) <span class="st">&quot;control&quot;</span> <span class="cf">else</span> <span class="st">&quot;treatment&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    linear <span class="ot">&lt;-</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      <span class="sc">-</span><span class="fl">0.4</span> <span class="sc">+</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>      <span class="fl">0.06</span> <span class="sc">*</span> time <span class="sc">+</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>      <span class="fl">0.35</span> <span class="sc">*</span> (group <span class="sc">==</span> <span class="st">&quot;treatment&quot;</span>) <span class="sc">*</span> <span class="fu">sin</span>(time <span class="sc">/</span> <span class="dv">3</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="fu">data.frame</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>      <span class="at">participant_id =</span> participants[i],</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>      <span class="at">sequence_id =</span> participants[i],</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>      <span class="at">sequence_order =</span> time,</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>      <span class="at">group =</span> group,</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>      <span class="at">state =</span> <span class="fu">ifelse</span>(</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>        stats<span class="sc">::</span><span class="fu">runif</span>(<span class="fu">length</span>(time)) <span class="sc">&lt;</span> stats<span class="sc">::</span><span class="fu">plogis</span>(linear),</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>        <span class="st">&quot;A&quot;</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>        <span class="st">&quot;B&quot;</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>      ),</span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>      <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>    )</span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>  })</span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="fit-and-inspect" class="section level2">
+<h2>Fit and inspect</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;mgcv&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  model <span class="ot">&lt;-</span> <span class="fu">fit_time_varying_sequence_model</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    x,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">group_col =</span> <span class="st">&quot;group&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="at">participant_id_col =</span> <span class="st">&quot;participant_id&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="at">target_state =</span> <span class="st">&quot;A&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">k =</span> <span class="dv">5</span><span class="dt">L</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  )</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  model_summary <span class="ot">&lt;-</span> <span class="fu">summarise_time_varying_sequence_model</span>(model)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  model_summary<span class="sc">$</span>metadata</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  model_summary<span class="sc">$</span>parametric_terms</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  model_summary<span class="sc">$</span>smooth_terms</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>}</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;                                   edf    Ref.df       Chi.sq    p-value</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; s(.time):.groupcontrol   1.0000070152  1.000014 3.4110320487 0.06476524</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; s(.time):.grouptreatment 1.0000046648  1.000009 0.8712217158 0.35062143</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; s(.participant)          0.0007846011 22.000000 0.0006886217 0.62618174</span></span></code></pre></div>
+</div>
+<div id="predictions" class="section level2">
+<h2>Predictions</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;mgcv&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  predictions <span class="ot">&lt;-</span> <span class="fu">predict_time_varying_sequence_model</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    model,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">12</span>, <span class="at">length.out =</span> <span class="dv">60</span><span class="dt">L</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">level =</span> <span class="fl">0.95</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  )</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="fu">head</span>(predictions)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>}</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;       time   group  estimate     lower     upper outcome</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 1 1.000000 control 0.3572934 0.2283391 0.5108610   state</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 2 1.186441 control 0.3612081 0.2340796 0.5112900   state</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 3 1.372881 control 0.3651413 0.2398916 0.5117573   state</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; 4 1.559322 control 0.3690926 0.2457709 0.5122658   state</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; 5 1.745763 control 0.3730615 0.2517130 0.5128189   state</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 6 1.932203 control 0.3770476 0.2577129 0.5134199   state</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;mgcv&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">plot_time_varying_sequence_model</span>(model)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>}</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="transition-outcomes" class="section level2">
+<h2>Transition outcomes</h2>
+<p>Use <code>outcome = &quot;transition&quot;</code> together with
+<code>from_state</code> and <code>to_state</code> to model a predeclared
+transition. The time coordinate refers to the origin position.</p>
+</div>
+<div id="interpretation" class="section level2">
+<h2>Interpretation</h2>
+<p>Pointwise intervals describe uncertainty conditional on the fitted
+model. A time-varying association is not automatically a causal
+condition effect. Causal language requires valid assignment,
+implementation, estimand definition, and an analysis aligned with the
+experimental design.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

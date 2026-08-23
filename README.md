@@ -1,18 +1,64 @@
 
 # gp3sequences <a href="https://stefanosbalaskas.github.io/gp3sequences/"><img src="man/figures/logo.png" align="right" height="139" alt="gp3sequences website" /></a>
 
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/gp3sequences)](https://CRAN.R-project.org/package=gp3sequences)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/gp3sequences)](https://CRAN.R-project.org/package=gp3sequences)
+[![R-CMD-check](https://github.com/stefanosbalaskas/gp3sequences/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/stefanosbalaskas/gp3sequences/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/stefanosbalaskas/gp3sequences/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/stefanosbalaskas/gp3sequences/actions/workflows/pkgdown.yaml)
+[![CRAN
+DOI](https://img.shields.io/badge/DOI-10.32614%2FCRAN.package.gp3sequences-blue.svg)](https://doi.org/10.32614/CRAN.package.gp3sequences)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
+
+**Links:** [CRAN](https://CRAN.R-project.org/package=gp3sequences) ·
+[Package website](https://stefanosbalaskas.github.io/gp3sequences/) ·
+[Source code](https://github.com/stefanosbalaskas/gp3sequences) · [Issue
+tracker](https://github.com/stefanosbalaskas/gp3sequences/issues) ·
+[CRAN
+checks](https://CRAN.R-project.org/web/checks/check_results_gp3sequences.html)
+
 `gp3sequences` is an independent R package for transparent,
 reproducible, and auditable analysis of ordered categorical sequences.
 It is designed for ordinary long-format data frames and is not
 restricted to Gazepoint exports, eye-tracking data, particular hardware,
 or proprietary software.
 
-## Development status
+## Installation
 
-The package is in initial development and does not yet provide a stable
-public analytical API. The first development series prioritises a
-neutral data contract, explicit preprocessing policies, machine-readable
-diagnostics, and deterministic structural summaries.
+Install the current CRAN release:
+
+``` r
+install.packages("gp3sequences")
+```
+
+Install the current release version from GitHub:
+
+``` r
+pak::pak("stefanosbalaskas/gp3sequences")
+```
+
+The CRAN release is version **0.1.0**, published on **30 July 2026**.
+The source repository currently contains release version **0.3.0**.
+
+## Current release status
+
+The current release version is **0.3.0**, building on the
+**0.2.0** release. The package currently exposes **81 public functions**
+and the website provides **15 synthetic, reproducible articles**.
+
+The 0.3.0 release combines the audited sequence-data contract with
+consensus and group comparisons, sequence distances, clustering and
+stability workflows, transition networks, higher-order models,
+categorical and mixture hidden Markov models, longitudinal and panel
+workflows, bounded non-contiguous subsequences, time-varying models,
+multichannel and covariate-dependent HMMs, design-aware inference,
+extended visualisations, optional specialist-package adapters, and
+analysis-contract/provenance auditing.
 
 ## Intended applications
 
@@ -59,7 +105,7 @@ example_sequences
 
 ## Current data-contract API
 
-The initial public API provides three related functions:
+The core sequence-data contract provides three related functions:
 
 - `audit_sequence_data()` reports structured data-quality issues;
 - `validate_sequence_data()` returns a compact validity contract;
@@ -89,6 +135,22 @@ prepared <- prepare_sequence_data(
   repeated_state_policy = "preserve"
 )
 ```
+
+## Analysis contracts and provenance
+
+The 0.3.0 release adds three public functions for machine-readable capability, contract, provenance, and reproducibility auditing:
+
+- `sequence_capabilities()` inventories native, adapter, reference,
+  handoff, and development capabilities without loading optional backend
+  namespaces;
+- `audit_sequence_analysis()` validates supported analysis objects
+  against explicit structural contracts and recovers provenance where
+  possible;
+- `compare_sequence_analysis_results()` compares contracts, provenance,
+  settings, and optionally result values across two analysis objects.
+
+These functions complement the sequence-data contract and provide the
+common foundation for the 0.3.0 hardening program.
 
 ## Encoding and structural summaries
 
@@ -205,6 +267,53 @@ plot_sequence_motif_positions(
 )
 ```
 
+## Documentation
+
+The package website now provides **15 synthetic, reproducible
+articles**:
+
+- getting started with the complete structural workflow;
+- sequence-data validation and policy-driven preparation;
+- choosing among motifs, consensus, distances, clustering, networks,
+  higher-order models, HMMs, and adapters;
+- a reproducible integrated synthetic case study;
+- contiguous motif analysis and motif positions;
+- consensus sequences and descriptive group comparisons;
+- sequence distances, clustering, representatives, ensembles, and
+  stability;
+- transition networks and higher-order models;
+- latent sequence models and optional ecosystem adapters;
+- longitudinal and panel sequence workflows;
+- non-contiguous subsequence mining;
+- time-varying condition models;
+- multichannel and covariate hidden Markov models;
+- design-aware sequence inference and randomization;
+- extended sequence visualisations.
+
+The articles use ordinary data frames and synthetic data. They preserve
+the package interpretation boundary and do not infer psychological or
+causal attributes from structural sequence outputs.
+
+## Current release extensions
+
+The 0.3.0 release includes the following explicitly governed workflows:
+
+- longitudinal and panel sequence preparation, summaries, change
+  metrics, and plots;
+- bounded non-contiguous subsequence mining with explicit gap, span, and
+  combination limits;
+- optional time-varying state and transition models using `mgcv`;
+- multichannel and covariate-dependent categorical hidden Markov models;
+- design-aware permutation and bootstrap group comparisons;
+- sequence-index, state-distribution, entropy, distance, network, and
+  silhouette plots.
+
+These extensions preserve ordinary-data-frame inputs, explicit method
+parameters, deterministic seeds, and structural interpretation
+boundaries. Inferential helpers record the independent unit and study
+design; observational contrasts remain associational, and randomized
+contrasts require valid assignment and implementation.
+
 ## Interpretation boundary
 
 Sequence outputs describe behavioural or structural patterns only. They
@@ -224,3 +333,25 @@ website](https://sites.google.com/view/stefbalaskas/) ·
 ## Licence
 
 `gp3sequences` is released under the MIT License.
+
+<!-- advanced-roadmap-start -->
+
+## Advanced sequence-analysis methods
+
+The 0.2.0 release established:
+
+- aligned-position consensus sequences and agreement diagnostics;
+- descriptive between-group comparisons;
+- edit, LCS, optimal-matching, and transition-profile distances;
+- clustering, validation, representatives, ensembles, and stability
+  analysis;
+- transition networks, centrality, communities, and higher-order models;
+- categorical HMMs, mixture HMMs, and state decoding;
+- optional adapters to specialist sequence-analysis packages.
+
+The 0.3.0 release extends that foundation with longitudinal and panel workflows, bounded non-contiguous subsequences, time-varying models, multichannel and covariate HMMs, design-aware inference, extended visualisations, and analysis-contract/provenance auditing.
+
+These outputs are structural and statistical. They do not independently
+establish emotion, cognition, comprehension, personality, intention,
+diagnosis, deception, causality, or other psychological attributes.
+<!-- advanced-roadmap-end -->
